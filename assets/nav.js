@@ -3,8 +3,8 @@ const NAV_PAGES = [
   { label:'Forms',        href:'pages/forms.html' },
   { label:'School',       href:'pages/school.html' },
   { label:'Scripts',      href:'pages/scripts.html' },
-  { label:'Resources',    href:'pages/resources.html' }, 
-  { label:'Compensation', href:'pages/compensation.html' } 
+  { label:'Resources',    href:'pages/resources.html' },
+  { label:'Compensation', href:'pages/compensation.html' }
 ];
 
 function buildNav(activeLabel, hrefPrefix){
@@ -32,3 +32,6 @@ function mountNav(activeLabel, hrefPrefix){
   const slot = document.getElementById('nav-slot');
   if(slot) slot.outerHTML = buildNav(activeLabel, hrefPrefix);
 }
+
+if('scrollRestoration' in history){ history.scrollRestoration = 'manual'; }
+window.scrollTo(0, 0);
