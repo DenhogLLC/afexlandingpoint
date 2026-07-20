@@ -3,7 +3,7 @@ const NAV_PAGES = [
   { label:'Forms',        href:'pages/forms.html' },
   { label:'School',       href:'pages/school.html' },
   { label:'Scripts',      href:'pages/scripts.html' },
-  { label:'Resources',    href:'pages/resources.html' },
+  { label:'Resources',    href:'pages/resources.html' }, 
   { label:'Compensation', href:'pages/compensation.html' } 
 ];
 
