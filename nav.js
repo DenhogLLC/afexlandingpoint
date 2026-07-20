@@ -4,7 +4,7 @@ const NAV_PAGES = [
   { label:'School',       href:'pages/school.html' },
   { label:'Scripts',      href:'pages/scripts.html' },
   { label:'Resources',    href:'pages/resources.html' },
-  { label:'Compensation', href:'pages/compensation.html' }
+  { label:'Compensation', href:'pages/compensation.html' } 
 ];
 
 function buildNav(activeLabel, hrefPrefix){
