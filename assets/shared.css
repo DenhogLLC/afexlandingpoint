@@ -40,6 +40,8 @@ body{ min-height:100%; font-family:'Switzer',system-ui,sans-serif; background:#f
   transition:color .2s, background .2s; }
 .nav-links a:hover{ color:var(--ink); background:rgba(201,6,58,.06); }
 .nav-links a.active{ color:var(--red); background:rgba(201,6,58,.09); }
+.nav-links a.nav-ico{ display:inline-flex; align-items:center; justify-content:center; padding:8px 12px; }
+.nav-links a.nav-ico svg{ width:20px; height:20px; display:block; }
 .nav-bell{ position:relative; width:40px; height:40px; flex-shrink:0; border:none; cursor:pointer; border-radius:12px;
   background:rgba(255,255,255,.4); border:1px solid rgba(255,255,255,.7);
   backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
