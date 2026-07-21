@@ -1,5 +1,10 @@
+const NAV_HOME_ICON =
+  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+    '<path d="M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>' +
+  '</svg>';
+
 const NAV_PAGES = [
-  { label:'Home',         href:'index.html' },
+  { label:'Home',         href:'index.html', icon:NAV_HOME_ICON },
   { label:'Forms',        href:'pages/forms.html' },
   { label:'School',       href:'pages/school.html' },
   { label:'Scripts',      href:'pages/scripts.html' },
@@ -10,7 +15,12 @@ const NAV_PAGES = [
 function buildNav(activeLabel, hrefPrefix){
   const prefix = hrefPrefix || '';
   const links = NAV_PAGES.map(p=>{
-    const cls = p.label === activeLabel ? ' class="active"' : '';
+    const isActive = p.label === activeLabel;
+    if(p.icon){
+      const cls = 'nav-ico' + (isActive ? ' active' : '');
+      return '<a href="'+prefix+p.href+'" class="'+cls+'" aria-label="'+p.label+'">'+p.icon+'</a>';
+    }
+    const cls = isActive ? ' class="active"' : '';
     return '<a href="'+prefix+p.href+'"'+cls+'>'+p.label+'</a>';
   }).join('');
 
