@@ -99,6 +99,18 @@
 
   @media (max-width:820px){ .board{ grid-template-columns:1fr 1fr; } .card.hero{ grid-column:1 / -1; grid-row:auto; } }
   @media (max-width:520px){ .board{ grid-template-columns:1fr; } }
+  .sandbox{ margin-top:40px; padding:24px; border-radius:20px; background:rgba(16,14,20,.02); border:1px solid var(--line); }
+  .sandbox-head{ margin-bottom:16px; }
+  .sandbox-sub{ font-size:.82rem; color:var(--soft); font-weight:500; margin-top:4px; }
+  .sandbox-controls{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px; }
+  .sbx-btn{ font-size:.84rem; font-weight:600; color:var(--ink); background:#fff; border:1px solid var(--line); border-radius:10px; padding:9px 16px; cursor:pointer; transition:background .2s, border-color .2s, color .2s; }
+  .sbx-btn:hover{ border-color:var(--red); color:var(--red); }
+  .sbx-btn.on{ background:var(--red); color:#fff; border-color:var(--red); }
+  .sandbox-out{ font-family:ui-monospace,'SF Mono',Menlo,monospace; font-size:.78rem; line-height:1.6; background:#fff; border:1px solid var(--line); border-radius:12px; padding:18px; overflow-x:auto; white-space:pre-wrap; color:var(--ink); min-height:60px; }
+  .sbx-loan{ padding:12px 0; border-bottom:1px solid var(--line); }
+  .sbx-loan:last-child{ border-bottom:none; }
+  .sbx-tag{ display:inline-block; font-size:.72rem; font-weight:700; padding:2px 9px; border-radius:6px; background:rgba(201,6,58,.09); color:var(--red); margin-right:8px; }
+  .sbx-lo{ font-weight:700; margin:14px 0 6px; color:var(--ink); }
 </style>
 </head>
 <body>
@@ -196,6 +208,19 @@
           <div class="bars-axis" id="subAxis"></div>
         </div>
       </div>
+
+      <div class="sandbox" id="ariveSandbox">
+        <div class="sandbox-head">
+          <div class="label">Arive Data Sandbox</div>
+          <div class="sandbox-sub">Sample loan records in Arive's real response shape. Values are placeholders; structure is exact.</div>
+        </div>
+        <div class="sandbox-controls">
+          <button class="sbx-btn" id="sbxRaw">Show Raw JSON</button>
+          <button class="sbx-btn" id="sbxParsed">Show Parsed</button>
+          <button class="sbx-btn" id="sbxByLo">Group by LO</button>
+        </div>
+        <div class="sandbox-out" id="sbxOut"></div>
+      </div>
     </div>
   </section>
 <script src="assets/nav.js"></script>
@@ -268,6 +293,98 @@
   const circ = 2 * Math.PI * 52;
   document.getElementById('convFill').style.strokeDashoffset = circ * (1 - CONV_PCT/100);
   renderChart('daily');
+
+  const ARIVE_SAMPLE = [
+    { ariveLoanId:17276616, loanCreatedFrom:"Manual",
+      loanBorrowers:[{firstName:"SAMPLE",lastName:"BORROWER",emailAddressText:"sample@example.com",mobilePhone10digit:"0000000000",applicantType:"Borrower"}],
+      subjectProperty:{addressLineText:"000 Sample St",city:"Taylor",county:"NAVAJO",state:"AZ",postalCode:"00000"},
+      currentLoanStatus:{status:"APPLICATION_INTAKE",date:"2026-07-21",adverseReason:null},
+      modifiedDateTime:"2026-07-21T19:39:50.271Z", createDateTime:"2026-07-21T18:24:54.343Z",
+      loanOriginatorEmail:"jasonm@afexmtg.com", loanPurpose:"Refinance", mortgageType:"Conventional",
+      baseLoanAmount:185000, purchasePriceOrEstimatedValue:235000, archiveIndicator:false,
+      deepLinkURL:"https://afexmortgage.myarive.com/app/loans/17276616" },
+    { ariveLoanId:17273967, loanCreatedFrom:"Mismo34",
+      loanBorrowers:[{firstName:"SAMPLE",lastName:"BORROWER",emailAddressText:"sample@example.com",mobilePhone10digit:"0000000000",applicantType:"Borrower"}],
+      subjectProperty:{addressLineText:"000 Sample St",city:"Tullahoma",county:"COFFEE",state:"TN",postalCode:"00000"},
+      currentLoanStatus:{status:"DISCLOSURE_SENT",date:"2026-07-21",adverseReason:null},
+      modifiedDateTime:"2026-07-21T19:39:45.123Z", createDateTime:"2026-07-21T15:05:45.132Z",
+      loanOriginatorEmail:"laurencej@afexmortgage.com", loanPurpose:"Refinance", mortgageType:"FHA",
+      baseLoanAmount:206500, purchasePriceOrEstimatedValue:315000, archiveIndicator:false,
+      deepLinkURL:"https://afexmortgage.myarive.com/app/loans/17273967" },
+    { ariveLoanId:17203380, loanCreatedFrom:"Mismo34",
+      loanBorrowers:[{firstName:"SAMPLE",lastName:"BORROWER",emailAddressText:"sample@example.com",mobilePhone10digit:"0000000000",applicantType:"Borrower"}],
+      subjectProperty:{addressLineText:"000 Sample St",city:"Lake Ariel",county:"WAYNE",state:"PA",postalCode:"00000"},
+      currentLoanStatus:{status:"CLEAR_TO_CLOSE",date:"2026-07-21",adverseReason:null},
+      modifiedDateTime:"2026-07-21T19:39:30.848Z", createDateTime:"2026-07-10T19:30:48Z",
+      loanOriginatorEmail:"jaggerk@afexmortgage.com", loanPurpose:"Refinance", mortgageType:"FHA",
+      baseLoanAmount:238500, purchasePriceOrEstimatedValue:270000, archiveIndicator:false,
+      deepLinkURL:"https://afexmortgage.myarive.com/app/loans/17203380" }
+  ];
+
+  const STATUS_LABELS = {
+    APPLICATION_INTAKE:"Application Intake",
+    DISCLOSURE_SENT:"Disclosure Sent",
+    CLEAR_TO_CLOSE:"Clear to Close",
+    PROCESSING:"Processing",
+    UNDERWRITING:"Underwriting",
+    CONDITIONAL_APPROVAL:"Conditional Approval",
+    LOAN_FUNDED:"Funded",
+    ADVERSE:"Adverse",
+    SUSPENDED:"Suspended"
+  };
+
+  function prettyStatus(s){ return STATUS_LABELS[s] || s; }
+  function loanAgeDays(iso){ return Math.floor((Date.now() - new Date(iso).getTime()) / 86400000); }
+  function money(n){ return "$" + (n||0).toLocaleString(); }
+  function loName(email){ return String(email||"").split("@")[0]; }
+
+  function parseLoan(l){
+    return {
+      id: l.ariveLoanId,
+      stage: prettyStatus(l.currentLoanStatus && l.currentLoanStatus.status),
+      ageDays: loanAgeDays(l.createDateTime),
+      lo: l.loanOriginatorEmail,
+      purpose: l.loanPurpose,
+      type: l.mortgageType,
+      amount: l.baseLoanAmount,
+      location: (l.subjectProperty ? l.subjectProperty.city + ", " + l.subjectProperty.state : ""),
+      link: l.deepLinkURL,
+      archived: l.archiveIndicator
+    };
+  }
+
+  const out = document.getElementById('sbxOut');
+  const btns = { raw:document.getElementById('sbxRaw'), parsed:document.getElementById('sbxParsed'), byLo:document.getElementById('sbxByLo') };
+
+  function setActive(key){ Object.keys(btns).forEach(k=> btns[k].classList.toggle('on', k===key)); }
+
+  function showRaw(){
+    setActive('raw');
+    out.textContent = JSON.stringify(ARIVE_SAMPLE, null, 2);
+  }
+  function showParsed(){
+    setActive('parsed');
+    const parsed = ARIVE_SAMPLE.map(parseLoan);
+    out.innerHTML = parsed.map(p=>
+      '<div class="sbx-loan"><span class="sbx-tag">'+p.stage+'</span>'+
+      '#'+p.id+' &middot; '+p.type+' '+p.purpose+' &middot; '+money(p.amount)+
+      ' &middot; '+p.location+' &middot; '+p.ageDays+' days old &middot; LO: '+loName(p.lo)+'</div>'
+    ).join('');
+  }
+  function showByLo(){
+    setActive('byLo');
+    const groups = {};
+    ARIVE_SAMPLE.map(parseLoan).forEach(p=>{ (groups[p.lo] = groups[p.lo] || []).push(p); });
+    out.innerHTML = Object.keys(groups).map(lo=>{
+      const rows = groups[lo].map(p=> '<div class="sbx-loan"><span class="sbx-tag">'+p.stage+'</span>#'+p.id+' &middot; '+money(p.amount)+' &middot; '+p.ageDays+' days</div>').join('');
+      return '<div class="sbx-lo">'+loName(lo)+' ('+groups[lo].length+' loan'+(groups[lo].length>1?'s':'')+')</div>'+rows;
+    }).join('');
+  }
+
+  btns.raw.addEventListener('click', showRaw);
+  btns.parsed.addEventListener('click', showParsed);
+  btns.byLo.addEventListener('click', showByLo);
+  showParsed();
 </script>
 </body>
 </html>
