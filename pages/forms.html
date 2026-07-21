@@ -18,15 +18,15 @@
 
   .section-label{ font-size:.78rem; letter-spacing:.14em; text-transform:uppercase; color:var(--soft); font-weight:700; margin:8px 0 18px; }
 
-  /* Forms are now compact red buttons, not full cards */
-  .form-btns{ display:flex; flex-wrap:wrap; gap:12px; margin-bottom:40px; }
-  .form-btn{ display:inline-flex; align-items:center; gap:10px; text-decoration:none;
-    padding:14px 22px; border-radius:14px; font-size:.95rem; font-weight:700; letter-spacing:-.01em;
+  /* Forms are square-ish tiles: icon stacked above the label */
+  .form-btns{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:14px; margin-bottom:40px; }
+  .form-btn{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; text-align:center; text-decoration:none;
+    aspect-ratio:1 / 1; padding:20px 16px; border-radius:20px; font-size:1rem; font-weight:700; letter-spacing:-.01em;
     color:#fff; background:linear-gradient(135deg,var(--red),var(--rose));
-    box-shadow:0 8px 20px -8px rgba(201,6,58,.5), 0 1px 0 rgba(255,255,255,.25) inset;
+    box-shadow:0 10px 26px -10px rgba(201,6,58,.5), 0 1px 0 rgba(255,255,255,.25) inset;
     transition:transform .25s var(--ease), box-shadow .25s var(--ease); }
-  .form-btn:hover{ transform:translateY(-3px); box-shadow:0 14px 28px -10px rgba(201,6,58,.6), 0 1px 0 rgba(255,255,255,.25) inset; }
-  .form-btn svg{ width:24px; height:24px; flex-shrink:0; }
+  .form-btn:hover{ transform:translateY(-4px); box-shadow:0 18px 34px -12px rgba(201,6,58,.6), 0 1px 0 rgba(255,255,255,.25) inset; }
+  .form-btn svg{ width:34px; height:34px; flex-shrink:0; }
 
   /* Checklists: one card, each checklist a row directly under the forms */
   .doc-list{ display:flex; flex-direction:column; gap:10px; }
