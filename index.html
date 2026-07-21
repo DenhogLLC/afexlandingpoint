@@ -106,11 +106,27 @@
   .sbx-btn{ font-size:.84rem; font-weight:600; color:var(--ink); background:#fff; border:1px solid var(--line); border-radius:10px; padding:9px 16px; cursor:pointer; transition:background .2s, border-color .2s, color .2s; }
   .sbx-btn:hover{ border-color:var(--red); color:var(--red); }
   .sbx-btn.on{ background:var(--red); color:#fff; border-color:var(--red); }
-  .sandbox-out{ font-family:ui-monospace,'SF Mono',Menlo,monospace; font-size:.78rem; line-height:1.6; background:#fff; border:1px solid var(--line); border-radius:12px; padding:18px; overflow-x:auto; white-space:pre-wrap; color:var(--ink); min-height:60px; }
-  .sbx-loan{ padding:12px 0; border-bottom:1px solid var(--line); }
-  .sbx-loan:last-child{ border-bottom:none; }
-  .sbx-tag{ display:inline-block; font-size:.72rem; font-weight:700; padding:2px 9px; border-radius:6px; background:rgba(201,6,58,.09); color:var(--red); margin-right:8px; }
-  .sbx-lo{ font-weight:700; margin:14px 0 6px; color:var(--ink); }
+  .sandbox-out{ background:transparent; min-height:60px; color:var(--ink); }
+  .sandbox-out.raw{ font-family:ui-monospace,'SF Mono',Menlo,monospace; font-size:.76rem; line-height:1.6; background:#fff; border:1px solid var(--line); border-radius:12px; padding:18px; overflow-x:auto; white-space:pre-wrap; }
+  .sbx-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:12px; }
+  .sbx-card{ background:#fff; border:1px solid var(--line); border-radius:14px; padding:16px 18px; transition:border-color .2s, transform .2s; }
+  .sbx-card:hover{ border-color:rgba(201,6,58,.3); transform:translateY(-2px); }
+  .sbx-card-top{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; }
+  .sbx-id{ font-size:.82rem; font-weight:700; color:var(--soft); }
+  .sbx-tag{ display:inline-block; font-size:.68rem; font-weight:700; letter-spacing:.02em; padding:4px 10px; border-radius:20px; background:rgba(201,6,58,.09); color:var(--red); white-space:nowrap; }
+  .sbx-amount{ font-size:1.35rem; font-weight:700; letter-spacing:-.02em; margin-bottom:10px; }
+  .sbx-fields{ display:grid; grid-template-columns:auto 1fr; gap:5px 14px; font-size:.82rem; }
+  .sbx-fk{ color:var(--soft); font-weight:600; }
+  .sbx-fv{ font-weight:600; text-align:right; }
+  .sbx-age{ display:inline-flex; align-items:center; gap:5px; }
+  .sbx-age.warn .sbx-dot{ background:#e8a23d; }
+  .sbx-age.hot .sbx-dot{ background:var(--red); }
+  .sbx-dot{ width:7px; height:7px; border-radius:50%; background:#3ca66a; display:inline-block; }
+  .sbx-group{ margin-bottom:24px; }
+  .sbx-group:last-child{ margin-bottom:0; }
+  .sbx-group-head{ display:flex; align-items:baseline; gap:10px; margin:0 0 12px; }
+  .sbx-group-name{ font-size:1.05rem; font-weight:700; }
+  .sbx-group-count{ font-size:.8rem; color:var(--soft); font-weight:600; }
 </style>
 </head>
 <body>
@@ -368,40 +384,61 @@
 
   function setActive(key){ Object.keys(btns).forEach(k=> btns[k].classList.toggle('on', k===key)); }
 
+  function ageClass(days){ return days >= 21 ? 'hot' : (days >= 10 ? 'warn' : ''); }
+
+  function loanCard(p, note){
+    return '<div class="sbx-card">'+
+      '<div class="sbx-card-top"><span class="sbx-id">#'+p.id+'</span><span class="sbx-tag">'+p.stage+'</span></div>'+
+      '<div class="sbx-amount">'+money(p.amount)+'</div>'+
+      '<div class="sbx-fields">'+
+        '<span class="sbx-fk">Type</span><span class="sbx-fv">'+p.type+' '+p.purpose+'</span>'+
+        '<span class="sbx-fk">Location</span><span class="sbx-fv">'+p.location+'</span>'+
+        '<span class="sbx-fk">Age</span><span class="sbx-fv"><span class="sbx-age '+ageClass(p.ageDays)+'"><span class="sbx-dot"></span>'+p.ageDays+' days</span></span>'+
+        '<span class="sbx-fk">LO</span><span class="sbx-fv">'+loName(p.lo)+'</span>'+
+        (p.loa ? '<span class="sbx-fk">LOA</span><span class="sbx-fv">'+loName(p.loa)+'</span>' : '')+
+        (note ? '<span class="sbx-fk">Access</span><span class="sbx-fv">'+note+'</span>' : '')+
+      '</div>'+
+    '</div>';
+  }
+
   function showRaw(){
     setActive('raw');
+    out.className = 'sandbox-out raw';
     out.textContent = JSON.stringify(ARIVE_SAMPLE, null, 2);
   }
   function showParsed(){
     setActive('parsed');
+    out.className = 'sandbox-out';
     const parsed = ARIVE_SAMPLE.map(parseLoan);
-    out.innerHTML = parsed.map(p=>
-      '<div class="sbx-loan"><span class="sbx-tag">'+p.stage+'</span>'+
-      '#'+p.id+' &middot; '+p.type+' '+p.purpose+' &middot; '+money(p.amount)+
-      ' &middot; '+p.location+' &middot; '+p.ageDays+' days old &middot; LO: '+loName(p.lo)+
-      (p.loa ? ' &middot; LOA: '+loName(p.loa) : '')+'</div>'
-    ).join('');
+    out.innerHTML = '<div class="sbx-grid">'+ parsed.map(p=> loanCard(p)).join('') +'</div>';
   }
   function showByLo(){
     setActive('byLo');
+    out.className = 'sandbox-out';
     const groups = {};
     ARIVE_SAMPLE.map(parseLoan).forEach(p=>{ (groups[p.lo] = groups[p.lo] || []).push(p); });
-    out.innerHTML = Object.keys(groups).map(lo=>{
-      const rows = groups[lo].map(p=> '<div class="sbx-loan"><span class="sbx-tag">'+p.stage+'</span>#'+p.id+' &middot; '+money(p.amount)+' &middot; '+p.ageDays+' days</div>').join('');
-      return '<div class="sbx-lo">'+loName(lo)+' ('+groups[lo].length+' loan'+(groups[lo].length>1?'s':'')+')</div>'+rows;
-    }).join('');
+    out.innerHTML = Object.keys(groups).map(lo=>
+      '<div class="sbx-group">'+
+        '<div class="sbx-group-head"><span class="sbx-group-name">'+loName(lo)+'</span><span class="sbx-group-count">'+groups[lo].length+' loan'+(groups[lo].length>1?'s':'')+'</span></div>'+
+        '<div class="sbx-grid">'+ groups[lo].map(p=> loanCard(p)).join('') +'</div>'+
+      '</div>'
+    ).join('');
   }
 
   function showScope(){
     setActive('scope');
+    out.className = 'sandbox-out';
     const parsed = ARIVE_SAMPLE.map(parseLoan);
     const testUsers = ["jaggerk@afexmortgage.com","assistant1@afexmortgage.com","jasonm@afexmtg.com"];
     out.innerHTML = testUsers.map(u=>{
       const visible = parsed.filter(p=> canSee(p, u));
-      const rows = visible.length
-        ? visible.map(p=> '<div class="sbx-loan"><span class="sbx-tag">'+p.stage+'</span>#'+p.id+' &middot; '+money(p.amount)+(String(p.loa).toLowerCase()===u.toLowerCase()?' &middot; (as assistant)':' &middot; (as LO)')+'</div>').join('')
-        : '<div class="sbx-loan">no loans visible</div>';
-      return '<div class="sbx-lo">'+loName(u)+' sees '+visible.length+' loan'+(visible.length===1?'':'s')+'</div>'+rows;
+      const cards = visible.length
+        ? '<div class="sbx-grid">'+ visible.map(p=> loanCard(p, String(p.loa).toLowerCase()===u.toLowerCase() ? 'as assistant' : 'as LO')).join('') +'</div>'
+        : '<div class="sbx-group-count">no loans visible</div>';
+      return '<div class="sbx-group">'+
+        '<div class="sbx-group-head"><span class="sbx-group-name">'+loName(u)+'</span><span class="sbx-group-count">sees '+visible.length+' loan'+(visible.length===1?'':'s')+'</span></div>'+
+        cards+
+      '</div>';
     }).join('');
   }
 
