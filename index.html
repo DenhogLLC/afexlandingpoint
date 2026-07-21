@@ -218,6 +218,7 @@
           <button class="sbx-btn" id="sbxRaw">Show Raw JSON</button>
           <button class="sbx-btn" id="sbxParsed">Show Parsed</button>
           <button class="sbx-btn" id="sbxByLo">Group by LO</button>
+          <button class="sbx-btn" id="sbxScope">Scope Test</button>
         </div>
         <div class="sandbox-out" id="sbxOut"></div>
       </div>
@@ -317,6 +318,7 @@
       currentLoanStatus:{status:"CLEAR_TO_CLOSE",date:"2026-07-21",adverseReason:null},
       modifiedDateTime:"2026-07-21T19:39:30.848Z", createDateTime:"2026-07-10T19:30:48Z",
       loanOriginatorEmail:"jaggerk@afexmortgage.com", loanPurpose:"Refinance", mortgageType:"FHA",
+      loanOfficerAssistantEmail:"assistant1@afexmortgage.com", loanOfficerAssistantName:"SAMPLE ASSISTANT",
       baseLoanAmount:238500, purchasePriceOrEstimatedValue:270000, archiveIndicator:false,
       deepLinkURL:"https://afexmortgage.myarive.com/app/loans/17203380" }
   ];
@@ -338,12 +340,20 @@
   function money(n){ return "$" + (n||0).toLocaleString(); }
   function loName(email){ return String(email||"").split("@")[0]; }
 
+  function canSee(loan, userEmail){
+    const u = String(userEmail||"").toLowerCase();
+    const lo = String(loan.lo||"").toLowerCase();
+    const loa = String(loan.loa||"").toLowerCase();
+    return u === lo || (loa && u === loa);
+  }
+
   function parseLoan(l){
     return {
       id: l.ariveLoanId,
       stage: prettyStatus(l.currentLoanStatus && l.currentLoanStatus.status),
       ageDays: loanAgeDays(l.createDateTime),
       lo: l.loanOriginatorEmail,
+      loa: l.loanOfficerAssistantEmail || null,
       purpose: l.loanPurpose,
       type: l.mortgageType,
       amount: l.baseLoanAmount,
@@ -354,7 +364,7 @@
   }
 
   const out = document.getElementById('sbxOut');
-  const btns = { raw:document.getElementById('sbxRaw'), parsed:document.getElementById('sbxParsed'), byLo:document.getElementById('sbxByLo') };
+  const btns = { raw:document.getElementById('sbxRaw'), parsed:document.getElementById('sbxParsed'), byLo:document.getElementById('sbxByLo'), scope:document.getElementById('sbxScope') };
 
   function setActive(key){ Object.keys(btns).forEach(k=> btns[k].classList.toggle('on', k===key)); }
 
@@ -368,7 +378,8 @@
     out.innerHTML = parsed.map(p=>
       '<div class="sbx-loan"><span class="sbx-tag">'+p.stage+'</span>'+
       '#'+p.id+' &middot; '+p.type+' '+p.purpose+' &middot; '+money(p.amount)+
-      ' &middot; '+p.location+' &middot; '+p.ageDays+' days old &middot; LO: '+loName(p.lo)+'</div>'
+      ' &middot; '+p.location+' &middot; '+p.ageDays+' days old &middot; LO: '+loName(p.lo)+
+      (p.loa ? ' &middot; LOA: '+loName(p.loa) : '')+'</div>'
     ).join('');
   }
   function showByLo(){
@@ -381,9 +392,23 @@
     }).join('');
   }
 
+  function showScope(){
+    setActive('scope');
+    const parsed = ARIVE_SAMPLE.map(parseLoan);
+    const testUsers = ["jaggerk@afexmortgage.com","assistant1@afexmortgage.com","jasonm@afexmtg.com"];
+    out.innerHTML = testUsers.map(u=>{
+      const visible = parsed.filter(p=> canSee(p, u));
+      const rows = visible.length
+        ? visible.map(p=> '<div class="sbx-loan"><span class="sbx-tag">'+p.stage+'</span>#'+p.id+' &middot; '+money(p.amount)+(String(p.loa).toLowerCase()===u.toLowerCase()?' &middot; (as assistant)':' &middot; (as LO)')+'</div>').join('')
+        : '<div class="sbx-loan">no loans visible</div>';
+      return '<div class="sbx-lo">'+loName(u)+' sees '+visible.length+' loan'+(visible.length===1?'':'s')+'</div>'+rows;
+    }).join('');
+  }
+
   btns.raw.addEventListener('click', showRaw);
   btns.parsed.addEventListener('click', showParsed);
   btns.byLo.addEventListener('click', showByLo);
+  btns.scope.addEventListener('click', showScope);
   showParsed();
 </script>
 </body>
