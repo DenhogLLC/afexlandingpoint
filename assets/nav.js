@@ -43,6 +43,39 @@ function mountNav(activeLabel, hrefPrefix){
   if(slot) slot.outerHTML = buildNav(activeLabel, hrefPrefix);
 }
 
+function setNavTrail(label){
+  const links = document.querySelector('.nav-links');
+  if(!links) return;
+  const school = Array.from(links.querySelectorAll('a')).find(a=> a.textContent.trim() === 'School');
+  if(!school) return;
+
+  let trail = document.getElementById('navTrail');
+  if(!trail){
+    trail = document.createElement('span');
+    trail.className = 'nav-trail';
+    trail.id = 'navTrail';
+    trail.innerHTML =
+      '<span class="nav-trail-line" aria-hidden="true"></span>'+
+      '<span class="nav-trail-tab" id="navTrailTab"></span>';
+    school.insertAdjacentElement('afterend', trail);
+  }
+  document.getElementById('navTrailTab').textContent = label;
+  school.classList.add('faded');
+  requestAnimationFrame(()=>{ trail.classList.add('on'); });
+}
+
+function clearNavTrail(){
+  const trail = document.getElementById('navTrail');
+  const links = document.querySelector('.nav-links');
+  if(links){
+    const school = Array.from(links.querySelectorAll('a')).find(a=> a.textContent.trim() === 'School');
+    if(school) school.classList.remove('faded');
+  }
+  if(!trail) return;
+  trail.classList.remove('on');
+  setTimeout(()=>{ if(trail && !trail.classList.contains('on')) trail.remove(); }, 420);
+}
+
 if('scrollRestoration' in history){ history.scrollRestoration = 'manual'; }
 window.scrollTo(0, 0);
 
