@@ -108,6 +108,7 @@ function closePdf(){
 document.addEventListener('click', function(e){
   const a = e.target.closest('a[href$=".pdf"]');
   if(!a) return;
+  if(a.id === 'pdfPop' || a.closest('.pdfmodal')) return;
   e.preventDefault();
   const name = a.querySelector('.doc-name');
   openPdf(a.getAttribute('href'), name ? name.textContent : '');
