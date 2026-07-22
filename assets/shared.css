@@ -91,3 +91,27 @@ body{ min-height:100%; font-family:'Switzer',system-ui,sans-serif; background:#f
 
 ::view-transition-old(root){ animation:fadeIn .22s var(--ease) reverse; }
 ::view-transition-new(root){ animation:fadeIn .28s var(--ease); }
+
+.page{ transition:filter .45s var(--ease), transform .45s var(--ease); }
+body.pdf-open .page{ filter:blur(9px) brightness(.62); transform:scale(1.035); }
+body.pdf-open{ overflow:hidden; }
+
+.pdfmodal{ position:fixed; inset:0; z-index:60; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:clamp(16px,3vw,44px); opacity:0; pointer-events:none; transition:opacity .35s var(--ease); }
+.pdfmodal.on{ opacity:1; pointer-events:auto; }
+.pdfmodal-scrim{ position:absolute; inset:0; background:rgba(16,14,20,.32); }
+.pdfmodal-shell{ position:relative; z-index:1; width:min(1100px,100%); height:min(88vh,100%); display:flex; flex-direction:column;
+  transform:translateY(14px) scale(.985); transition:transform .35s var(--ease); }
+.pdfmodal.on .pdfmodal-shell{ transform:translateY(0) scale(1); }
+.pdfmodal-bar{ display:flex; align-items:center; justify-content:space-between; gap:14px; margin-bottom:10px; }
+.pdfmodal-title{ font-size:.95rem; font-weight:700; color:#fff; text-shadow:0 1px 12px rgba(0,0,0,.5); }
+.pdfmodal-close{ width:34px; height:34px; border:none; cursor:pointer; border-radius:10px; background:rgba(255,255,255,.14);
+  color:#fff; display:flex; align-items:center; justify-content:center; transition:background .2s, transform .2s; }
+.pdfmodal-close:hover{ background:rgba(255,255,255,.26); transform:translateY(-1px); }
+.pdfmodal-close svg{ width:17px; height:17px; }
+.pdfmodal-frame{ flex:1; width:100%; border:none; border-radius:16px; background:#fff; box-shadow:0 30px 70px -20px rgba(0,0,0,.55); }
+.pdfmodal-foot{ display:flex; justify-content:center; margin-top:12px; }
+.pdfmodal-pop{ display:inline-flex; align-items:center; gap:8px; font-size:.84rem; font-weight:700; text-decoration:none;
+  color:#fff; background:rgba(255,255,255,.14); border-radius:12px; padding:9px 18px; transition:background .2s, transform .2s; }
+.pdfmodal-pop:hover{ background:rgba(255,255,255,.26); transform:translateY(-1px); }
+.pdfmodal-pop svg{ width:15px; height:15px; }
