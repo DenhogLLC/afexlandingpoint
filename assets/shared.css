@@ -42,6 +42,14 @@ body{ min-height:100%; font-family:'Switzer',system-ui,sans-serif; background:#f
 .nav-links a.active{ color:var(--red); background:rgba(201,6,58,.09); }
 .nav-links a.nav-ico{ display:inline-flex; align-items:center; justify-content:center; padding:8px 12px; }
 .nav-links a.nav-ico svg{ width:20px; height:20px; display:block; }
+.nav-links a.faded{ color:var(--red); background:rgba(201,6,58,.04); opacity:.55; }
+
+.nav-trail{ display:inline-flex; align-items:center; overflow:hidden; max-width:0; opacity:0;
+  transition:max-width .42s var(--ease), opacity .32s var(--ease); }
+.nav-trail.on{ max-width:260px; opacity:1; }
+.nav-trail-line{ width:16px; height:1.5px; border-radius:2px; background:var(--red); opacity:.35; flex-shrink:0; margin:0 2px; }
+.nav-trail-tab{ font-size:.86rem; font-weight:600; color:var(--red); background:rgba(201,6,58,.09);
+  padding:8px 14px; border-radius:10px; white-space:nowrap; }
 .nav-bell{ position:relative; width:40px; height:40px; flex-shrink:0; border:none; cursor:pointer; border-radius:12px;
   background:rgba(255,255,255,.4); border:1px solid rgba(255,255,255,.7);
   backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
