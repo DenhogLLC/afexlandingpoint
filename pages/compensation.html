@@ -19,10 +19,40 @@
   .section-label{ font-size:.78rem; letter-spacing:.14em; text-transform:uppercase; color:var(--soft); font-weight:700; margin:0 0 18px; }
   .sec{ margin-bottom:52px; }
 
-  .calc-slot{ border-radius:20px; overflow:hidden; border:1px solid var(--line);
-    background:linear-gradient(150deg,rgba(255,255,255,.72),rgba(255,255,255,.4)); }
-  .calc-ph{ padding:44px 24px; text-align:center; color:var(--soft); font-size:.88rem; font-weight:600; }
-  .calc-ph span{ display:block; font-size:.78rem; opacity:.75; margin-top:6px; }
+  .calc{ display:grid; grid-template-columns:1fr 1fr; gap:22px; border-radius:20px; padding:26px;
+    border:1px solid var(--line); background:linear-gradient(150deg,rgba(255,255,255,.72),rgba(255,255,255,.4)); }
+  @media (max-width:820px){ .calc{ grid-template-columns:1fr; } }
+  .calc-inputs{ display:flex; flex-direction:column; gap:15px; }
+  .calc-field{ display:block; }
+  .calc-label{ display:block; font-size:.66rem; letter-spacing:.12em; text-transform:uppercase; color:var(--soft); font-weight:800; margin-bottom:7px; }
+  .calc-input{ width:100%; font-family:'Switzer',system-ui,sans-serif; font-size:.95rem; font-weight:600; color:var(--ink);
+    background:#fff; border:1px solid var(--line); border-radius:12px; padding:11px 14px; outline:none;
+    transition:border-color .2s var(--ease), box-shadow .2s var(--ease); }
+  .calc-input:focus{ border-color:var(--red); box-shadow:0 0 0 3px rgba(201,6,58,.12); }
+  select.calc-input{ appearance:none; cursor:pointer;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b6675' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 12px center; background-size:15px; padding-right:36px; }
+  .calc-money{ position:relative; }
+  .calc-pre{ position:absolute; left:14px; top:50%; transform:translateY(-50%); font-size:.95rem; font-weight:700; color:var(--soft); pointer-events:none; }
+  .calc-money .calc-input{ padding-left:29px; }
+
+  .calc-out{ display:flex; flex-direction:column; }
+  .calc-hero{ border-radius:16px; padding:20px 22px; color:#fff; margin-bottom:14px;
+    background:linear-gradient(135deg,var(--red-deep),var(--red) 55%,var(--rose));
+    box-shadow:0 14px 32px -14px rgba(201,6,58,.55), 0 1px 0 rgba(255,255,255,.25) inset; }
+  .calc-hero-l{ font-size:.66rem; letter-spacing:.12em; text-transform:uppercase; font-weight:800; opacity:.88; }
+  .calc-hero-v{ font-size:clamp(2rem,4.4vw,2.7rem); font-weight:800; letter-spacing:-.03em; line-height:1.05; margin-top:6px; }
+  .calc-hero-s{ font-size:.8rem; font-weight:600; opacity:.85; margin-top:4px; }
+  .calc-rows{ display:flex; flex-direction:column; }
+  .calc-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 2px;
+    border-top:1px solid var(--line); font-size:.86rem; }
+  .calc-row:first-child{ border-top:none; }
+  .calc-row span{ color:var(--soft); font-weight:600; }
+  .calc-row b{ font-weight:800; letter-spacing:-.01em; }
+  .calc-row-total{ border-top:2px solid rgba(201,6,58,.25); margin-top:2px; }
+  .calc-row-total span{ color:var(--ink); font-weight:800; }
+  .calc-row-total b{ color:var(--red); font-size:1.05rem; }
+  .calc-note{ font-size:.76rem; color:var(--soft); font-weight:500; line-height:1.5; margin-top:14px; }
 
   .crit-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:18px; }
   .crit{ border-radius:20px; padding:26px 28px; border:1px solid var(--line); position:relative; overflow:hidden;
@@ -107,8 +137,43 @@
 
       <div class="sec anim-rise" style="--d:80ms">
         <div class="section-label">Commission Calculator</div>
-        <div class="calc-slot" id="calcSlot">
-          <div class="calc-ph">Commission calculator goes here<span>Paste the calculator code and it will be embedded in this slot</span></div>
+        <div class="calc" id="calc">
+          <div class="calc-inputs">
+            <label class="calc-field">
+              <span class="calc-label">Role</span>
+              <select id="cRole" class="calc-input"></select>
+            </label>
+            <label class="calc-field">
+              <span class="calc-label">Loan Amount</span>
+              <div class="calc-money">
+                <span class="calc-pre">$</span>
+                <input id="cAmount" class="calc-input" type="text" inputmode="numeric" value="300,000" />
+              </div>
+            </label>
+            <label class="calc-field">
+              <span class="calc-label">Units Funded This Month</span>
+              <input id="cUnits" class="calc-input" type="number" min="0" max="99" value="4" />
+            </label>
+            <label class="calc-field">
+              <span class="calc-label">Submissions This Month</span>
+              <input id="cSubs" class="calc-input" type="number" min="0" max="99" value="0" />
+            </label>
+          </div>
+          <div class="calc-out">
+            <div class="calc-hero">
+              <div class="calc-hero-l">Commission on This Loan</div>
+              <div class="calc-hero-v" id="cPayout">$0</div>
+              <div class="calc-hero-s" id="cRate">&nbsp;</div>
+            </div>
+            <div class="calc-rows">
+              <div class="calc-row"><span>Applied Tier</span><b id="cTier">&mdash;</b></div>
+              <div class="calc-row"><span>Submission Goal</span><b id="cGoal">&mdash;</b></div>
+              <div class="calc-row"><span>Goal Progress</span><b id="cPct">&mdash;</b></div>
+              <div class="calc-row"><span>Bonus Earned</span><b id="cBonus">&mdash;</b></div>
+              <div class="calc-row calc-row-total"><span>Loan + Bonus</span><b id="cTotal">$0</b></div>
+            </div>
+            <div class="calc-note">Commission is basis points applied to the loan amount. Bonus is based on submissions against your monthly goal. Estimates only.</div>
+          </div>
         </div>
       </div>
 
@@ -231,6 +296,68 @@
       if(el) el.scrollIntoView({ behavior:'smooth', block:'center' });
     });
   });
+
+  const cRole=document.getElementById('cRole'), cAmount=document.getElementById('cAmount'),
+        cUnits=document.getElementById('cUnits'), cSubs=document.getElementById('cSubs');
+
+  cRole.innerHTML = ROLES.map(function(r,i){ return '<option value="'+i+'">'+r.name+'</option>'; }).join('');
+  cRole.value = '2';
+
+  function tierFor(role, units){
+    const u = Math.max(0, Number(units)||0);
+    if(role.short === 'Founder'){
+      return u >= 8 ? { label:'8+ Funded Loans / Month', bps:125 } : { label:'Flat', bps:100 };
+    }
+    let idx;
+    if(u <= 2) idx = 0; else if(u <= 5) idx = 1; else if(u <= 8) idx = 2; else idx = 3;
+    const row = role.bps[idx];
+    return { label:row[0], bps:parseInt(row[1],10) };
+  }
+
+  function money(n){ return '$' + Math.round(n).toLocaleString(); }
+  function parseAmount(v){ return Number(String(v).replace(/[^0-9.]/g,'')) || 0; }
+
+  function bonusFor(role, subs){
+    if(!role.goal || !role.bonus) return { amount:0, label:'Not applicable', pct:NaN };
+    const pct = (Number(subs)||0) / role.goal * 100;
+    let hit = null;
+    role.bonus.forEach(function(b){
+      const threshold = parseInt(b[0],10);
+      if(pct >= threshold) hit = b;
+    });
+    return {
+      amount: hit ? parseAmount(hit[1]) : 0,
+      label: hit ? (hit[0] + ' tier') : 'None yet',
+      pct: pct
+    };
+  }
+
+  function runCalc(){
+    const role = ROLES[Number(cRole.value)||0];
+    const amount = parseAmount(cAmount.value);
+    const tier = tierFor(role, cUnits.value);
+    const payout = amount * tier.bps / 10000;
+    const bonus = bonusFor(role, cSubs.value);
+
+    document.getElementById('cPayout').textContent = money(payout);
+    document.getElementById('cRate').textContent = tier.bps + ' BPs on ' + money(amount);
+    document.getElementById('cTier').textContent = tier.label + ' \u00b7 ' + tier.bps + ' BPs';
+    document.getElementById('cGoal').textContent = role.goal ? (role.goal + ' subs / month') : '\u2014';
+    document.getElementById('cPct').textContent = isNaN(bonus.pct) ? '\u2014' : Math.round(bonus.pct) + '%';
+    document.getElementById('cBonus').textContent = bonus.amount ? (money(bonus.amount) + ' \u00b7 ' + bonus.label) : bonus.label;
+    document.getElementById('cTotal').textContent = money(payout + bonus.amount);
+  }
+
+  cAmount.addEventListener('input', function(){
+    const caret = cAmount.selectionStart, len = cAmount.value.length;
+    const n = parseAmount(cAmount.value);
+    cAmount.value = n ? n.toLocaleString() : '';
+    const diff = cAmount.value.length - len;
+    try{ cAmount.setSelectionRange(caret + diff, caret + diff); }catch(e){}
+    runCalc();
+  });
+  [cRole, cUnits, cSubs].forEach(function(el){ el.addEventListener('input', runCalc); });
+  runCalc();
 </script>
 </body>
 </html>
