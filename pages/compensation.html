@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Compensation &middot; AFEX Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500;1,600;1,700&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600,700,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/shared.css">
+<style>
+  .page-head{ margin-bottom:36px; }
+  .page-title{ font-family:'Cormorant Garamond',serif; font-style:italic; font-weight:700; font-size:clamp(2.4rem,5vw,3.6rem); line-height:1.1; letter-spacing:-.01em;
+    background:linear-gradient(100deg,var(--red-deep),var(--rose)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent; padding-bottom:.08em; }
+  .page-sub{ font-size:.95rem; color:var(--soft); font-weight:500; margin-top:.4rem; }
+
+  .section-label{ font-size:.78rem; letter-spacing:.14em; text-transform:uppercase; color:var(--soft); font-weight:700; margin:0 0 18px; }
+  .sec{ margin-bottom:52px; }
+
+  .calc-slot{ border-radius:20px; overflow:hidden; border:1px solid var(--line);
+    background:linear-gradient(150deg,rgba(255,255,255,.72),rgba(255,255,255,.4)); }
+  .calc-ph{ padding:44px 24px; text-align:center; color:var(--soft); font-size:.88rem; font-weight:600; }
+  .calc-ph span{ display:block; font-size:.78rem; opacity:.75; margin-top:6px; }
+
+  .crit-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:18px; }
+  .crit{ border-radius:20px; padding:26px 28px; border:1px solid var(--line); position:relative; overflow:hidden;
+    background:linear-gradient(150deg,rgba(255,255,255,.7),rgba(255,255,255,.38)); }
+  .crit::before{ content:""; position:absolute; left:0; top:0; bottom:0; width:4px; }
+  .crit.up::before{ background:linear-gradient(180deg,#2f9e5f,#57c68a); }
+  .crit.down::before{ background:linear-gradient(180deg,var(--red-deep),var(--rose)); }
+  .crit-head{ display:flex; align-items:center; gap:10px; margin-bottom:18px; }
+  .crit-ic{ width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#fff; flex-shrink:0; }
+  .crit.up .crit-ic{ background:linear-gradient(135deg,#2f9e5f,#57c68a); }
+  .crit.down .crit-ic{ background:linear-gradient(135deg,var(--red),var(--rose)); }
+  .crit-ic svg{ width:17px; height:17px; }
+  .crit-title{ font-size:1.05rem; font-weight:700; letter-spacing:-.01em; }
+  .crit.up .crit-title{ color:#22794a; }
+  .crit.down .crit-title{ color:var(--red-deep); }
+  .crit-item{ padding:11px 0; border-top:1px solid var(--line); }
+  .crit-item:first-of-type{ border-top:none; padding-top:0; }
+  .crit-main{ font-size:.9rem; font-weight:700; }
+  .crit-sub{ font-size:.82rem; color:var(--soft); font-weight:500; margin-top:3px; }
+
+  .track{ display:flex; align-items:stretch; gap:8px; overflow-x:auto; padding-bottom:6px; margin-bottom:26px; }
+  .track-step{ flex:1; min-width:104px; border-radius:14px; padding:13px 12px; text-align:center;
+    border:1px solid var(--line); background:rgba(255,255,255,.5); cursor:pointer;
+    transition:transform .22s var(--ease), box-shadow .22s var(--ease), border-color .22s var(--ease); }
+  .track-step:hover{ transform:translateY(-3px); }
+  .track-step .ts-n{ font-size:.7rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--soft); }
+  .track-step .ts-g{ font-size:1.1rem; font-weight:800; letter-spacing:-.02em; margin-top:5px; }
+  .track-step.t-grey .ts-g{ color:#5d5866; }
+  .track-step.t-red{ border-color:rgba(201,6,58,.4); }
+  .track-step.t-red .ts-g{ color:var(--red); }
+  .track-step.t-gold{ border-color:rgba(184,134,11,.45); }
+  .track-step.t-gold .ts-g{ color:#a8791a; }
+  .track-step.t-blue{ border-color:rgba(37,99,235,.4); }
+  .track-step.t-blue .ts-g{ color:#2154c4; }
+
+  .roles{ display:grid; grid-template-columns:repeat(auto-fit,minmax(330px,1fr)); gap:18px; }
+  .role{ position:relative; overflow:hidden; border-radius:20px; padding:26px 26px 24px; border:1px solid var(--line);
+    background:linear-gradient(150deg,rgba(255,255,255,.72),rgba(255,255,255,.4));
+    transition:transform .26s var(--ease), box-shadow .26s var(--ease); }
+  .role:hover{ transform:translateY(-4px); }
+  .role-bar{ position:absolute; left:0; right:0; top:0; height:4px; }
+  .role-mark{ position:absolute; right:-8%; top:-14%; width:44%; opacity:.06; pointer-events:none; }
+  .role-mark svg{ width:100%; height:auto; display:block; }
+  .role-name{ font-size:1.18rem; font-weight:800; letter-spacing:-.02em; }
+  .role-tag{ display:inline-block; font-size:.66rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase;
+    padding:4px 10px; border-radius:20px; margin-top:9px; }
+  .role-block{ margin-top:20px; }
+  .role-block-h{ font-size:.66rem; letter-spacing:.12em; text-transform:uppercase; color:var(--soft); font-weight:800; margin-bottom:9px; }
+  .bps-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:8px 0; border-top:1px solid var(--line); }
+  .bps-row:first-of-type{ border-top:none; }
+  .bps-u{ font-size:.85rem; font-weight:600; color:var(--soft); }
+  .bps-v{ font-size:.95rem; font-weight:800; letter-spacing:-.01em; }
+  .goal-pill{ display:inline-flex; align-items:baseline; gap:6px; padding:9px 15px; border-radius:12px;
+    background:rgba(16,14,20,.04); border:1px solid var(--line); }
+  .goal-n{ font-size:1.3rem; font-weight:800; letter-spacing:-.02em; }
+  .goal-l{ font-size:.76rem; font-weight:700; color:var(--soft); }
+  .bonus-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:9px; }
+  .bonus{ border-radius:12px; padding:11px 8px; text-align:center; border:1px solid var(--line); background:rgba(255,255,255,.55); }
+  .bonus-p{ font-size:.68rem; font-weight:800; letter-spacing:.05em; color:var(--soft); }
+  .bonus-a{ font-size:1rem; font-weight:800; letter-spacing:-.02em; margin-top:3px; }
+  .role-note{ font-size:.82rem; color:var(--soft); font-weight:500; line-height:1.5; padding:10px 0 0; border-top:1px solid var(--line); margin-top:16px; }
+  .role-note b{ color:var(--ink); font-weight:700; }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="aura" aria-hidden="true">
+      <div class="wash" style="width:44vw;height:44vw;right:-8vw;top:-12vh;background:radial-gradient(circle at center,rgba(201,6,58,.22),transparent 64%);animation:wf3 34s ease-in-out infinite;"></div>
+      <div class="wash" style="width:40vw;height:40vw;left:-6vw;bottom:6vh;background:radial-gradient(circle at center,rgba(244,63,111,.2),transparent 64%);animation:wf2 40s ease-in-out infinite;"></div>
+      <div class="wash" style="width:38vw;height:38vw;left:36vw;top:8vh;background:radial-gradient(circle at center,rgba(255,138,170,.18),transparent 62%);animation:wf1 46s ease-in-out infinite;"></div>
+    </div>
+    <div class="grain" aria-hidden="true" style="z-index:1;"></div>
+    <div class="sheen" aria-hidden="true" style="z-index:1;"></div>
+
+    <div class="page-content">
+      <span id="nav-slot"></span>
+
+      <div class="page-head anim-rise">
+        <div class="page-title">Compensation</div>
+        <div class="page-sub">Basis points, submission goals, bonus tiers, and what it takes to move up.</div>
+      </div>
+
+      <div class="sec anim-rise" style="--d:80ms">
+        <div class="section-label">Commission Calculator</div>
+        <div class="calc-slot" id="calcSlot">
+          <div class="calc-ph">Commission calculator goes here<span>Paste the calculator code and it will be embedded in this slot</span></div>
+        </div>
+      </div>
+
+      <div class="sec anim-rise" style="--d:140ms">
+        <div class="section-label">Moving Between Levels</div>
+        <div class="crit-grid" id="critGrid"></div>
+      </div>
+
+      <div class="sec anim-rise" style="--d:200ms">
+        <div class="section-label">Career Track</div>
+        <div class="track" id="track"></div>
+        <div class="roles" id="roles"></div>
+      </div>
+    </div>
+  </div>
+
+<script src="../assets/nav.js"></script>
+<script>
+  mountNav('Compensation', '../');
+
+  const CRITERIA = [
+    { dir:'up', title:'Promotion Criteria',
+      icon:'<path d="M12 19V5M5 12l7-7 7 7"/>',
+      items:[
+        ['3 Months of 125% of Sub Goal','Minimum 3 closings per month'],
+        ['Attendance','Strong attendance'],
+        ['Clean Files','Willing to help review'],
+        ['Independence','Takes initiative and works autonomously'],
+        ['Good Reviews','Consistently good reviews']
+      ] },
+    { dir:'down', title:'Demotion Criteria',
+      icon:'<path d="M12 5v14M5 12l7 7 7-7"/>',
+      items:[
+        ['2 Months of Not Hitting 100% of Sub Goal','Tier 2 on closing not hit'],
+        ['Attendance','Poor attendance'],
+        ['Written Warning','Lack of progress after warning'],
+        ['Compliance','Red flags and compliance issues'],
+        ['Poor Reviews','Not prioritizing customer service']
+      ] }
+  ];
+
+  const TIER = {
+    grey: { cls:'t-grey', bar:'linear-gradient(90deg,#8b8592,#b4aeba)', tagBg:'rgba(93,88,102,.1)',  tagFg:'#5d5866', label:'Standard' },
+    red:  { cls:'t-red',  bar:'linear-gradient(90deg,var(--red-deep),var(--rose))', tagBg:'rgba(201,6,58,.1)', tagFg:'var(--red-deep)', label:'Senior' },
+    gold: { cls:'t-gold', bar:'linear-gradient(90deg,#b8860b,#e8c25a)', tagBg:'rgba(184,134,11,.12)', tagFg:'#a8791a', label:'Executive' },
+    blue: { cls:'t-blue', bar:'linear-gradient(90deg,#1e40af,#4f8ef7)', tagBg:'rgba(37,99,235,.1)', tagFg:'#2154c4', label:'Founder' }
+  };
+
+  const ROLES = [
+    { name:'Client Care Specialist', short:'CCS', tier:'grey',
+      bps:[['1-2 Units','45 BPs'],['3-5 Units','55 BPs'],['6-8 Units','65 BPs'],['9+ Units','75 BPs']],
+      goal:6, bonus:[['125%','$350'],['150%','$650'],['200%','$1,000']] },
+    { name:'Sr. Client Care Specialist', short:'Sr CCS', tier:'grey',
+      bps:[['1-2 Units','55 BPs'],['3-5 Units','65 BPs'],['6-8 Units','75 BPs'],['9+ Units','85 BPs']],
+      goal:9, bonus:[['125%','$550'],['150%','$850'],['200%','$1,250']] },
+    { name:'Loan Officer', short:'LO', tier:'grey',
+      bps:[['1-2 Units','55 BPs'],['3-5 Units','65 BPs'],['6-8 Units','75 BPs'],['9+ Units','85 BPs']],
+      goal:11, bonus:[['125%','$600'],['150%','$1,050'],['200%','$1,550']] },
+    { name:'Senior Loan Officer', short:'Sr LO', tier:'red',
+      bps:[['1-2 Units','60 BPs'],['3-5 Units','70 BPs'],['6-8 Units','80 BPs'],['9+ Units','90 BPs']],
+      goal:13, bonus:[['125%','$650'],['150%','$1,250'],['200%','$2,250']] },
+    { name:'Executive Loan Officer', short:'Exec LO', tier:'gold',
+      bps:[['1-2 Units','65 BPs'],['3-5 Units','75 BPs'],['6-8 Units','85 BPs'],['9+ Units','95 BPs']],
+      goal:15, bonus:[['125%','$900'],['150%','$1,500'],['200%','$2,750']] },
+    { name:'Founder Loan Officer', short:'Founder', tier:'blue',
+      bps:[['Flat','100 BPs'],['8+ Funded Loans / Month','125 BPs']],
+      note:'<b>Loan Minimum:</b> 65 units on a rolling 6 months. <b>Submission &amp; Tenure:</b> 150% submission average and 1 year tenure.' }
+  ];
+
+  const MARK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+
+  document.getElementById('critGrid').innerHTML = CRITERIA.map(function(c){
+    return '<div class="crit '+c.dir+'">'+
+      '<div class="crit-head">'+
+        '<span class="crit-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">'+c.icon+'</svg></span>'+
+        '<span class="crit-title">'+c.title+'</span>'+
+      '</div>'+
+      c.items.map(function(it){
+        return '<div class="crit-item"><div class="crit-main">'+it[0]+'</div><div class="crit-sub">'+it[1]+'</div></div>';
+      }).join('')+
+    '</div>';
+  }).join('');
+
+  document.getElementById('track').innerHTML = ROLES.map(function(r,i){
+    const t = TIER[r.tier];
+    return '<div class="track-step '+t.cls+'" data-i="'+i+'">'+
+      '<div class="ts-n">Level '+(i+1)+'</div>'+
+      '<div class="ts-g">'+r.short+'</div>'+
+    '</div>';
+  }).join('');
+
+  document.getElementById('roles').innerHTML = ROLES.map(function(r,i){
+    const t = TIER[r.tier];
+    const bps = r.bps.map(function(b){
+      return '<div class="bps-row"><span class="bps-u">'+b[0]+'</span><span class="bps-v">'+b[1]+'</span></div>';
+    }).join('');
+    const goal = r.goal
+      ? '<div class="role-block"><div class="role-block-h">Submission Goal</div>'+
+        '<span class="goal-pill"><span class="goal-n">'+r.goal+'</span><span class="goal-l">subs / month</span></span></div>'
+      : '';
+    const bonus = r.bonus
+      ? '<div class="role-block"><div class="role-block-h">Bonus Structure</div><div class="bonus-grid">'+
+        r.bonus.map(function(b){ return '<div class="bonus"><div class="bonus-p">'+b[0]+'</div><div class="bonus-a">'+b[1]+'</div></div>'; }).join('')+
+        '</div></div>'
+      : '';
+    const note = r.note ? '<div class="role-note">'+r.note+'</div>' : '';
+    return '<div class="role" id="role-'+i+'">'+
+      '<div class="role-bar" style="background:'+t.bar+'"></div>'+
+      '<div class="role-mark" aria-hidden="true">'+MARK+'</div>'+
+      '<div class="role-name">'+r.name+'</div>'+
+      '<span class="role-tag" style="background:'+t.tagBg+';color:'+t.tagFg+'">'+t.label+'</span>'+
+      '<div class="role-block"><div class="role-block-h">Funded Units &amp; BPs</div>'+bps+'</div>'+
+      goal + bonus + note +
+    '</div>';
+  }).join('');
+
+  document.querySelectorAll('.track-step').forEach(function(s){
+    s.addEventListener('click', function(){
+      const el = document.getElementById('role-'+s.dataset.i);
+      if(el) el.scrollIntoView({ behavior:'smooth', block:'center' });
+    });
+  });
+</script>
+</body>
+</html>
